@@ -2,7 +2,7 @@ use std::{net::SocketAddr, sync::Arc};
 
 use config::Config;
 use error::handle_errors;
-use scoopit_api::{GetTopicRequest, ScoopitAPIClient};
+use scoopit_api::{GetProfileRequest, GetTopicRequest, ScoopitAPIClient};
 use warp::{http, http::header, Filter};
 mod config;
 mod error;
@@ -53,6 +53,17 @@ async fn main() -> anyhow::Result<()> {
             .and_then(move |url_name| handle_errors(get_topic(url_name, server_resources.clone())))
     };
 
+    let get_user = {
+        let server_resources = server_resources.clone();
+        warp::get()
+            .and(warp::path("user"))
+            .and(warp::path::param())
+            .and(warp::path::end())
+            .and_then(move |short_name| {
+                handle_errors(get_user(short_name, server_resources.clone()))
+            })
+    };
+
     // 404 not found for all get requests not matching any filters
     let catch_all_not_found = warp::get().map(|| http::StatusCode::NOT_FOUND);
 
@@ -61,6 +72,7 @@ async fn main() -> anyhow::Result<()> {
             .or(version)
             .or(metrics)
             .or(get_topic)
+            .or(get_user)
             .or(catch_all_not_found) // MUST be the last one!!!
             .with(log)
             .with(metrics::request_metrics())
@@ -90,6 +102,25 @@ async fn get_topic(
 
     // convert to json using our smaller types.
     Ok(Box::new(warp::reply::json(&output::TopicJsonOutput::from(
+        topic,
+    ))))
+}
+
+async fn get_user(
+    short_name: String,
+    resources: Arc<ServerResources>,
+) -> anyhow::Result<Box<dyn warp::Reply>> {
+    // Get from API
+    let topic = resources
+        .scoopit_client
+        .get(GetProfileRequest {
+            short_name: Some(short_name),
+            ..Default::default()
+        })
+        .await?;
+
+    // convert to json using our smaller types.
+    Ok(Box::new(warp::reply::json(&output::UserJsonOutput::from(
         topic,
     ))))
 }

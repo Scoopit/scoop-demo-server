@@ -77,3 +77,14 @@ impl From<Box<User>> for UserJsonOutput {
         }
     }
 }
+impl From<User> for UserJsonOutput {
+    fn from(u: User) -> Self {
+        Self {
+            name: u.name,
+            short_name: u.short_name,
+            url: u.url,
+            bio: u.bio,
+            avatar_url: u.large_avatar_url,
+        }
+    }
+}

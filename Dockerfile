@@ -19,5 +19,6 @@ RUN cargo build --release
 
 # Build Run
 FROM debian:stable-slim AS run
+RUN apt-get update && apt-get install -y openssl ca-certificates
 COPY --from=scoop-demo-server-builder /build/app/target/release/scoop-demo-server scoop-demo-server
 ENTRYPOINT ["./scoop-demo-server"]

@@ -1,5 +1,24 @@
 # Demonstration server that use scoopit-api crate.
 
+## Building 
+
+If you have the rust toolchain installed and you want to run it locally, build it with:
+```shell
+cargo build --release
+```
+
+Alternatively a docker build image is provided:
+```shell
+# build the image
+docker build -t scoop-demo-server .
+# run the image with correct args
+docker run -p 5001:5001 \
+  -e RUST_LOG=info \
+  -e APP_BIND_ADDRESS=0.0.0.0:5501 \
+  -e APP_CLIENT_ID=my_client_id \
+  -e APP_CLIENT_SECRET=my_secret \
+  scoop-demo-server
+```
 
 ## License
 

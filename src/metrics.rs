@@ -19,8 +19,11 @@ pub fn generate_metrics() -> anyhow::Result<String> {
 pub fn launch_async_process_collector() {
     tokio::task::spawn(collect(Duration::from_secs(60)));
 }
+
 #[cfg(target_os = "linux")]
 async fn collect(interval: Duration) {
+    use prometheus::core::Collector;
+
     let process_collector = prometheus::process_collector::ProcessCollector::for_self();
     loop {
         debug!("Collecting process info");

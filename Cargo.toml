@@ -12,7 +12,7 @@ anyhow="1"
 thiserror="1"
 tokio = { version="0.2", features = ["rt-core","rt-threaded", "macros"]}
 warp="0.2"
-scoopit-api="0.1.1"
+scoopit-api="0.1.2"
 log="0.4"
 env_logger="0.8"
 dotenv = "0.15.0"

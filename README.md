@@ -1,5 +1,7 @@
 # Demonstration server that use scoopit-api crate.
 
+
+
 ## Building 
 
 If you have the rust toolchain installed and you want to run it locally, run it with:
@@ -23,6 +25,20 @@ docker run -p 5001:5001 \
   -e APP_CLIENT_SECRET=my_secret \
   scoop-demo-server
 ```
+
+## Prebuilt binaries
+
+A docker image is provided containing the latest build for this demo server: `zenria/scoop-demo-server`.
+
+```
+docker run -p 5001:5001 \
+  -e RUST_LOG=info \
+  -e APP_BIND_ADDRESS=0.0.0.0:5501 \
+  -e APP_CLIENT_ID=my_client_id \
+  -e APP_CLIENT_SECRET=my_secret \
+  zenria/scoop-demo-server
+```
+
 
 ## Configuration parameters
 

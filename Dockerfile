@@ -1,5 +1,5 @@
 # Stable
-FROM rust:latest as build
+FROM rust:latest as scoop-demo-server-builder
 
 RUN cargo --version
 
@@ -12,12 +12,12 @@ COPY Cargo.lock .
 RUN cargo build --release
 
 # Build Application
-RUN rm src/*.rs
-RUN rm ./target/release/deps/app
-COPY src/ src/
+RUN rm -rf src/
+COPY src src
+RUN rm target/release/deps/scoop_demo_server*
 RUN cargo build --release
 
 # Build Run
 FROM debian:stable-slim AS run
-COPY --from=builder /build/app/target/release/app app
-ENTRYPOINT ["./app"]
+COPY --from=scoop-demo-server-builder /build/app/target/release/scoop-demo-server scoop-demo-server
+ENTRYPOINT ["./scoop-demo-server"]

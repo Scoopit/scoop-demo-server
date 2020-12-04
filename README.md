@@ -2,15 +2,19 @@
 
 ## Building 
 
-If you have the rust toolchain installed and you want to run it locally, build it with:
+If you have the rust toolchain installed and you want to run it locally, run it with:
 ```shell
+# build
 cargo build --release
+# run the executable
+target/release/scoop-demo-server
 ```
 
-Alternatively a docker build image is provided:
+Alternatively you can use the provided Dockerfile:
 ```shell
 # build the image
 docker build -t scoop-demo-server .
+
 # run the image with correct args
 docker run -p 5001:5001 \
   -e RUST_LOG=info \
@@ -19,6 +23,17 @@ docker run -p 5001:5001 \
   -e APP_CLIENT_SECRET=my_secret \
   scoop-demo-server
 ```
+
+## Configuration parameters
+
+Configuration are read from environment variables.
+- `APP_BIND_ADDRESS` bind address
+- `APP_CLIENT_ID` oauth client id
+- `APP_CLIENT_SECRET` oauth secret id
+- `RUST_LOG` logging configuration see [`env_logger`](https://docs.rs/env_logger/0.8.2/env_logger/)
+
+If a `.env` file is present in the current directory or its parents environments variables declared in
+it will expand the current environment.
 
 ## License
 

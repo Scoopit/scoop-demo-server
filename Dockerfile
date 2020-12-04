@@ -1,6 +1,8 @@
 # Stable
 FROM rust:latest as build
 
+RUN cargo --version
+
 # Build Dependancies
 WORKDIR /build
 RUN USER=root cargo new --bin app

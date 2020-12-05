@@ -47,6 +47,7 @@ async fn main() -> anyhow::Result<()> {
     let get_topic = {
         let server_resources = server_resources.clone();
         warp::get()
+            .and(warp::path("api"))
             .and(warp::path("topic"))
             .and(warp::path::param())
             .and(warp::path::end())
@@ -56,6 +57,7 @@ async fn main() -> anyhow::Result<()> {
     let get_user = {
         let server_resources = server_resources.clone();
         warp::get()
+            .and(warp::path("api"))
             .and(warp::path("user"))
             .and(warp::path::param())
             .and(warp::path::end())

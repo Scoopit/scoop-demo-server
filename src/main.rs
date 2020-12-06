@@ -1,4 +1,4 @@
-use std::{net::SocketAddr, sync::Arc};
+use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 
 use config::Config;
 use error::handle_errors;
@@ -66,11 +66,20 @@ async fn main() -> anyhow::Result<()> {
                 handle_errors(get_user(short_name, server_resources.clone()))
             })
     };
+    let mut index_html = PathBuf::from(config.static_html());
+    index_html.push("index.html");
     info!(
         "Serving static files from directory: {}",
         config.static_html()
     );
+    info!("index.html path: {}", index_html.to_string_lossy());
+
     let serve_static_files = warp::filters::fs::dir(config.static_html().to_string());
+
+    // serve index.html on some specific path handled by React Router
+    let server_index_html = warp::get()
+        .and(warp::path("topic"))
+        .and(warp::fs::file(index_html));
 
     // 404 not found for all get requests not matching any filters
     let catch_all_not_found = warp::get().map(|| http::StatusCode::NOT_FOUND);
@@ -82,6 +91,7 @@ async fn main() -> anyhow::Result<()> {
             .or(get_topic)
             .or(get_user)
             .or(serve_static_files)
+            .or(server_index_html)
             .or(catch_all_not_found) // MUST be the last one!!!
             .with(log)
             .with(metrics::request_metrics())

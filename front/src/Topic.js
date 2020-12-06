@@ -38,7 +38,6 @@ export const Topic = () => {
             <div>{topic.posts.map((post, i) => i % 2 === 0 && (<Post key={i} {...post} />))}</div>
             <div>{topic.posts.map((post, i) => i % 2 === 1 && (<Post key={i} {...post} />))}</div>
         </div>
-
     </div>
 }
 
@@ -46,7 +45,7 @@ const domain = (url) => {
     if (!url) {
         return null;
     }
-    const u = new URL("http://example.com/aa/bb/");
+    const u = new URL(url);
     return u.host;
 }
 
@@ -55,7 +54,7 @@ const Insight = ({ html_insight }) => html_insight &&
     <div class="mt-1 rounded-sm shadow-md bg-gray-100 p-2"
     >
         <div>Curator's insight:</div>
-        <div class="italic" dangerouslySetInnerHTML={{ __html: html_insight }} />
+        <div class="italic overflow-ellipsis overflow-hidden" dangerouslySetInnerHTML={{ __html: html_insight }} />
     </div>;
 
 const ViewOriginal = ({ url }) => {

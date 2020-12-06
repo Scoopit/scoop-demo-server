@@ -2,6 +2,7 @@ use std::{net::SocketAddr, sync::Arc};
 
 use config::Config;
 use error::handle_errors;
+use log::info;
 use scoopit_api::{GetProfileRequest, GetTopicRequest, ScoopitAPIClient};
 use warp::{http, http::header, Filter};
 mod config;
@@ -65,6 +66,11 @@ async fn main() -> anyhow::Result<()> {
                 handle_errors(get_user(short_name, server_resources.clone()))
             })
     };
+    info!(
+        "Serving static files from directory: {}",
+        config.static_html()
+    );
+    let serve_static_files = warp::filters::fs::dir(config.static_html().to_string());
 
     // 404 not found for all get requests not matching any filters
     let catch_all_not_found = warp::get().map(|| http::StatusCode::NOT_FOUND);
@@ -75,6 +81,7 @@ async fn main() -> anyhow::Result<()> {
             .or(metrics)
             .or(get_topic)
             .or(get_user)
+            .or(serve_static_files)
             .or(catch_all_not_found) // MUST be the last one!!!
             .with(log)
             .with(metrics::request_metrics())

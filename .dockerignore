@@ -1,1 +1,4 @@
 target
+front/node_modules
+front/*.lock
+front/package-lock.json

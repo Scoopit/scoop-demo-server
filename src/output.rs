@@ -44,8 +44,9 @@ impl From<Topic> for TopicJsonOutput {
             creator: t.creator.unwrap().into(),
             posts: t
                 .curated_posts
-                .unwrap()
                 .into_iter()
+                .into_iter()
+                .flatten()
                 .map(|p| p.into())
                 .collect(),
         }
@@ -85,6 +86,32 @@ impl From<User> for UserJsonOutput {
             url: u.url,
             bio: u.bio,
             avatar_url: u.large_avatar_url,
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct SearchJsonOutput {
+    users: Option<Vec<UserJsonOutput>>,
+    topics: Option<Vec<TopicJsonOutput>>,
+    posts: Option<Vec<PostJsonOutput>>,
+    total_found: i32,
+}
+
+impl From<SearchResults> for SearchJsonOutput {
+    fn from(s: SearchResults) -> Self {
+        let SearchResults {
+            posts,
+            topics,
+            users,
+            total_found,
+        } = s;
+
+        Self {
+            users: users.map(|users| users.into_iter().map(|user| user.into()).collect()),
+            topics: topics.map(|topics| topics.into_iter().map(|topic| topic.into()).collect()),
+            posts: posts.map(|posts| posts.into_iter().map(|post| post.into()).collect()),
+            total_found,
         }
     }
 }

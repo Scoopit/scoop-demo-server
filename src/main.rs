@@ -3,7 +3,9 @@ use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 use config::Config;
 use error::handle_errors;
 use log::info;
-use scoopit_api::{GetProfileRequest, GetTopicRequest, ScoopitAPIClient};
+use scoopit_api::{
+    GetProfileRequest, GetTopicRequest, ScoopitAPIClient, SearchRequest, SearchRequestType,
+};
 use warp::{http, http::header, Filter};
 mod config;
 mod error;
@@ -66,6 +68,20 @@ async fn main() -> anyhow::Result<()> {
                 handle_errors(get_user(short_name, server_resources.clone()))
             })
     };
+
+    let search = {
+        let server_resources = server_resources.clone();
+        warp::get()
+            .and(warp::path("api"))
+            .and(warp::path("search"))
+            .and(warp::path::param())
+            .and(warp::path::param())
+            .and(warp::path::end())
+            .and_then(move |search_type, query| {
+                handle_errors(search(search_type, query, server_resources.clone()))
+            })
+    };
+
     let mut index_html = PathBuf::from(config.static_html());
     index_html.push("index.html");
     info!(
@@ -90,6 +106,7 @@ async fn main() -> anyhow::Result<()> {
             .or(metrics)
             .or(get_topic)
             .or(get_user)
+            .or(search)
             .or(serve_static_files)
             .or(server_index_html)
             .or(catch_all_not_found) // MUST be the last one!!!
@@ -142,4 +159,25 @@ async fn get_user(
     Ok(Box::new(warp::reply::json(&output::UserJsonOutput::from(
         topic,
     ))))
+}
+
+async fn search(
+    search_type: SearchRequestType,
+    query: String,
+    resources: Arc<ServerResources>,
+) -> anyhow::Result<Box<dyn warp::Reply>> {
+    // Get from API
+    let results = resources
+        .scoopit_client
+        .get(SearchRequest {
+            search_type,
+            query,
+            ..Default::default()
+        })
+        .await?;
+
+    // convert to json using our smaller types.
+    Ok(Box::new(warp::reply::json(
+        &output::SearchJsonOutput::from(results),
+    )))
 }

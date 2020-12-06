@@ -34,9 +34,10 @@ export const Topic = () => {
                 <a href={topic.url}>View it on Scoop.it</a>
             </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-            <div>{topic.posts.map((post, i) => i % 2 === 0 && (<Post key={i} {...post} />))}</div>
-            <div>{topic.posts.map((post, i) => i % 2 === 1 && (<Post key={i} {...post} />))}</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:hidden">{topic.posts.map((post, i) => (<Post key={i} {...post} />))}</div>
+            <div class="hidden md:block">{topic.posts.map((post, i) => i % 2 === 0 && (<Post key={i} {...post} />))}</div>
+            <div class="hidden md:block">{topic.posts.map((post, i) => i % 2 === 1 && (<Post key={i} {...post} />))}</div>
         </div>
     </div>
 }

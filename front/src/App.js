@@ -2,7 +2,7 @@ import { Route, BrowserRouter as Router, Link } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 import { Topic } from './Topic';
 import React from 'react';
-import { Search, SearchResults } from './Search';
+import { Search, SearchLoading, SearchResults } from './Search';
 
 function App() {
   return (
@@ -29,7 +29,7 @@ function App() {
           <div class="mb-4">
             <Search />
           </div>
-          <div>
+          <div class="relative">
             <SearchResults />
           </div>
         </Route>

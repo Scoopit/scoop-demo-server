@@ -19,10 +19,16 @@ const searchResult = atom({
     default: null,
 })
 
+const loading = atom({
+    key: "search/results/loading",
+    default: false,
+})
+
 export const Search = () => {
     // handle debouncing and fetching.
     // results are stored in a recoil state
     const setSearchResults = useSetRecoilState(searchResult);
+    const setLoading = useSetRecoilState(loading);
     useEffect(() => {
         // set value of input state
         const sub = searchQuery$.pipe(
@@ -31,6 +37,7 @@ export const Search = () => {
                 if (q === "") {
                     return of(null);
                 } else {
+                    setLoading(true) // not sure its appropriate to do this here
                     return ajax.getJSON("/api/search/topic/" + encodeURIComponent(q))
                         .pipe(catchError(error => {
                             console.log('error: ', error);
@@ -38,16 +45,22 @@ export const Search = () => {
                         }))
                 }
             }),
-        ).subscribe(setSearchResults)
+        ).subscribe(results => {
+            setSearchResults(results)
+            setLoading(false);
+        });
         return () => {
             sub.unsubscribe();
         }
-    }, [setSearchResults])
+    }, [setSearchResults, setLoading])
     return <SearchField />
 };
 
 const SearchField = () => {
     let [value, setValue] = useRecoilState(searchInputValue);
+    let isLoading = useRecoilValue(loading);
+
+    const buttonClasses = isLoading ? "bg-gray-400" : "hover:bg-lime-700  bg-lime-600 cursor-pointer"
 
     return <div class="p-4 bg-white shadow-sm">
         Or search for one:
@@ -63,13 +76,9 @@ const SearchField = () => {
                     searchQuery$.next(value);
                 }}
             />
-            <div class="pt-1 pb-1 pl-3 pr-3 
-                    shadow-sm cursor-pointer 
-                    border-lime:600 transition-colors
-                    hover:bg-lime-700 border bg-lime-600 
-                    rounded inline-block text-white uppercase">
-                Search
-              </div>
+            <div class={"pt-1 pb-1 pl-3 pr-3 shadow-sm  border-lime:600 transition-colors border rounded inline-block text-white uppercase " + buttonClasses}>
+                {isLoading ? "Searching" : "Search"}
+            </div>
         </div>
     </div>
 }

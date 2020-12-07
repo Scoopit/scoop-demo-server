@@ -2,11 +2,11 @@
 
 This repository consists in two parts:
 
-The backend responsible for requesting Scoop.it API and serving frontend files (only in production mode). It is written
+The backend, responsible for requesting Scoop.it API and serving frontend files (only in production mode). It is written
 in the Rust programming language. Under the hood it's using [`warp`](https://crates.io/crates/warp) to handle HTTP request,
 and [`scoopit-api`](https://crates.io/crates/scoopit-api) to make requests to Scoop.it.
 
-The frontend is responsible for getting data from the backend and presenting it in your browser. It is a regular 
+The frontend, responsible for getting data from the backend and presenting it in your browser. It is a regular 
 [Create React App](https://create-react-app.dev/). State management is done with [Recoil](https://recoiljs.org/) and
 [RxJS](https://rxjs.dev/).
 

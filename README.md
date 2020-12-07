@@ -4,13 +4,43 @@
 
 ## Building 
 
-If you have the rust toolchain installed and you want to run it locally, run it with:
+### Development
+
+You need the Rust toolchain to build the backend, `yarn` and `nodejs` 12+ to build the frontend.
+
+Build and run the backend:
+```shell
+cargo run
+```
+
+The backend needs environments variables in order to find your API credentials ; you may want to create a `.env` file
+at the root of the project containing:
+```
+APP_CLIENT_ID=ABCDEF_MY_KEY
+APP_CLIENT_SECRET=GHIYJ_MY_SECRET
+APP_BIND_ADDRESS="[::]:5001"
+RUST_LOG=info
+```
+
+Then, build and run the frontend
+```shell
+cd front
+yarn start
+```
+
+
+### Build for production
+
 ```shell
 # build
 cargo build --release
-# run the executable
-target/release/scoop-demo-server
+cd front
+yarn build
 ```
+
+When running the produced backend binary you need to set the `APP_STATIC_HTML` environment variable to tell the backend
+to server frontend files.
+
 
 Alternatively you can use the provided Dockerfile:
 ```shell
@@ -26,7 +56,8 @@ docker run -p 5001:5001 \
   scoop-demo-server
 ```
 
-## Prebuilt binaries
+
+## Prebuilt Docker image
 
 A docker image is provided containing the latest build for this demo server: `zenria/scoop-demo-server`.
 

@@ -7,7 +7,7 @@ in the Rust programming language. Under the hood it's using [`warp`](https://cra
 and [`scoopit-api`](https://crates.io/crates/scoopit-api) to make requests to Scoop.it.
 
 The frontend responsible for getting data from the backend and presenting it in your browser. It is a regular 
-(`create-react-app`)[https://create-react-app.dev/]. State managment is done with [Recoil](https://recoiljs.org/) and
+[`create-react-app`](https://create-react-app.dev/). State managment is done with [Recoil](https://recoiljs.org/) and
 [RxJS](https://rxjs.dev/).
 
 ## Building 

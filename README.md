@@ -1,6 +1,13 @@
-# Demonstration server that use scoopit-api crate.
+# Modern demo of accessing the Scoop.it API.
 
+This repository consists in two parts:
 
+The backend responsible for accessiing scoop.it API and in production mode, serving frontent files. It is written
+in the Rust programming language. Under the hood it's using [`warp`](https://crates.io/crates/warp) to handle HTTP request,
+and [`scoopit-api`](https://crates.io/crates/scoopit-api) to make requests to Scoop.it.
+
+The frontend responsible for getting data from the backend and presenting it in your browser. It is a regular 
+`create-react-app`.
 
 ## Building 
 

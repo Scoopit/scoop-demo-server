@@ -8,7 +8,7 @@ and [`scoopit-api`](https://crates.io/crates/scoopit-api) to make requests to Sc
 
 The frontend responsible for getting data from the backend and presenting it in your browser. It is a regular 
 (`create-react-app`)[https://create-react-app.dev/]. State managment is done with [Recoil](https://recoiljs.org/) and
-(RxJS)[https://rxjs.dev/].
+[RxJS](https://rxjs.dev/).
 
 ## Building 
 

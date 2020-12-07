@@ -13,12 +13,6 @@ const searchInputValue = atom({
     default: "",
 });
 
-// the query being searched for
-const searchQuery = atom({
-    key: "search/query",
-    default: null,
-});
-
 // the search results
 const searchResult = atom({
     key: "search/results",
@@ -28,12 +22,10 @@ const searchResult = atom({
 export const Search = () => {
     // handle debouncing and fetching.
     // results are stored in a recoil state
-    let setSearchQuery = useSetRecoilState(searchQuery);
     const setSearchResults = useSetRecoilState(searchResult);
     useEffect(() => {
         // set value of input state
-        const sub2 = searchQuery$.pipe(debounceTime(500)).subscribe(setSearchQuery);
-        const sub3 = searchQuery$.pipe(
+        const sub = searchQuery$.pipe(
             debounceTime(500),
             switchMap(q => {
                 if (q === "") {
@@ -48,23 +40,14 @@ export const Search = () => {
             }),
         ).subscribe(setSearchResults)
         return () => {
-            sub2.unsubscribe();
-            sub3.unsubscribe();
+            sub.unsubscribe();
         }
-    }, [setSearchQuery, setSearchResults])
+    }, [setSearchResults])
     return <SearchField />
 };
 
 const SearchField = () => {
     let [value, setValue] = useRecoilState(searchInputValue);
-
-    useEffect(() => {
-        // set value of input state
-        const sub = searchQuery$.subscribe(setValue);
-        return () => {
-            sub.unsubscribe();
-        }
-    }, [setValue])
 
     return <div class="p-4 bg-white shadow-sm">
         Or search for one:
@@ -72,8 +55,13 @@ const SearchField = () => {
             <input type="text" placeholder="Enter some text here"
                 class="flex-grow p-1 border border-lime-300 focus:border-lime-600 focus:outline-none rounded-sm"
                 value={value}
-                onChange={(e) => searchQuery$.next(e.target.value)
-                }
+                onChange={(e) => {
+                    const value = e.target.value;
+                    // set value in recoil state
+                    setValue(value)
+                    // send value to our rxjs subject
+                    searchQuery$.next(value);
+                }}
             />
             <div class="pt-1 pb-1 pl-3 pr-3 
                     shadow-sm cursor-pointer 

@@ -1,9 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import {
-    atom,
-    selector,
-    useRecoilState,
     useRecoilValue,
     selectorFamily,
 } from 'recoil';

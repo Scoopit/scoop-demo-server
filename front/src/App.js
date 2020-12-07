@@ -1,4 +1,4 @@
-import { Route, BrowserRouter as Router, useParams, Link } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Link } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 import { Topic } from './Topic';
 import React from 'react';

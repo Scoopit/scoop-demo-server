@@ -24,6 +24,7 @@ COPY front front
 WORKDIR /build/front
 RUN yarn
 RUN yarn build
+RUN echo Front build size: $(du -hs build)
 
 # Build Run
 FROM debian:stable-slim AS run

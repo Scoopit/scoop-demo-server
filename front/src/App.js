@@ -2,6 +2,7 @@ import { Route, BrowserRouter as Router, useParams, Link } from 'react-router-do
 import { RecoilRoot } from 'recoil';
 import { Topic } from './Topic';
 import React from 'react';
+import { Search, SearchResults } from './Search';
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
           <Link to="/" class="text-black">Scoop.it API demo</Link>
         </div>
         <Route path="/" exact>
-          <div class="p-4 bg-white shadow-sm">
+          <div class="p-4 bg-white shadow-sm mb-4">
             Please choose a topic:
               <ul>
               <li>
@@ -24,6 +25,12 @@ function App() {
                 <Link to="/topic/best-of-photojournalism">Best of Photojournalism</Link>
               </li>
             </ul>
+          </div>
+          <div class="mb-4">
+            <Search />
+          </div>
+          <div>
+            <SearchResults />
           </div>
         </Route>
         <Route path="/topic/:urlName">

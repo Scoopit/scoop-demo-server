@@ -26,7 +26,6 @@ export const Topic = () => {
     if (topic == null) {
         return <div style={{ color: "red" }}>Topic not found</div>
     }
-    console.log(topic)
     return <div className="p-4 max-w-screen-lg mx-auto">
         <div class="bg-white p-4 mb-4 shadow-md">
             <h1>{topic.name}</h1>

@@ -1323,9 +1323,9 @@ dependencies = [
 
 [[package]]
 name = "scoopit-api"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5e068821e89a271b474326f030123e2f04f6dda318694322bd22bdb71b3468b7"
+checksum = "0037abfc79939f06b03ee591b9e0f414edeae589dbd4dea361e34706898755ce"
 dependencies = [
  "anyhow",
  "jsonwebtoken",

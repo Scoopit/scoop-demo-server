@@ -20,4 +20,4 @@ dotenv = "0.15.0"
 envy="0.4"
 serde={version="1", features=["derive"]}
 prometheus = { version="0.11.0", features=["process"] }
-
+urlencoding="1.1"

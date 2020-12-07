@@ -2,7 +2,7 @@ use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 
 use config::Config;
 use error::handle_errors;
-use log::info;
+use log::{debug, info};
 use scoopit_api::{
     GetProfileRequest, GetTopicRequest, ScoopitAPIClient, SearchRequest, SearchRequestType,
 };
@@ -166,6 +166,8 @@ async fn search(
     query: String,
     resources: Arc<ServerResources>,
 ) -> anyhow::Result<Box<dyn warp::Reply>> {
+    let query = urlencoding::decode(&query)?;
+    debug!("Searching: {}", query);
     // Get from API
     let results = resources
         .scoopit_client

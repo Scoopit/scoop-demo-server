@@ -8,18 +8,19 @@
 
 You need the Rust toolchain to build the backend, `yarn` and `nodejs` 12+ to build the frontend.
 
-Build and run the backend:
-```shell
-cargo run
+First create a `.env` file containing needed configuration for the backend:
 ```
-
-The backend needs environments variables in order to find your API credentials ; you may want to create a `.env` file
-at the root of the project containing:
-```
+# Backend config
 APP_CLIENT_ID=ABCDEF_MY_KEY
 APP_CLIENT_SECRET=GHIYJ_MY_SECRET
 APP_BIND_ADDRESS="[::]:5001"
+# Tell rust env_logger to log a bit
 RUST_LOG=info
+```
+
+Build and run the backend:
+```shell
+cargo run
 ```
 
 Then, build and run the frontend
@@ -28,6 +29,7 @@ cd front
 yarn start
 ```
 
+It should open a browser tab on `http://localhost:3000`
 
 ### Build for production
 
@@ -39,10 +41,9 @@ yarn build
 ```
 
 When running the produced backend binary you need to set the `APP_STATIC_HTML` environment variable to tell the backend
-to server frontend files.
+to server frontend files. Note that is this done automatically in the provided `Dockerfile`
 
-
-Alternatively you can use the provided Dockerfile:
+Alternatively you can use the provided `Dockerfile`:
 ```shell
 # build the image
 docker build -t scoop-demo-server .

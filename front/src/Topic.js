@@ -18,6 +18,23 @@ const topicData = selectorFamily({
     }
 })
 
+export const TopicHeader = ({ image_url, name, description, url }) => (
+    <div class="bg-white shadow-md flex max-h-32 md:max-h-40">
+        <div class="h-32 w-32 md:h-40 md:w-40 bg-cover flex-shrink-0"
+            style={{ backgroundImage: "url('" + image_url + "')" }}
+        />
+        <div class="p-4 flex flex-col">
+            <h1 class="text-xl md:text-2xl">{name}</h1>
+            <div class="flex-grow overflow-hidden" dangerouslySetInnerHTML={{ __html: description }}>
+
+            </div>
+            <div class="text-sm">
+                <a href={url}>View it on Scoop.it</a>
+            </div>
+        </div>
+    </div>
+)
+
 export const Topic = () => {
     let { urlName } = useParams();
     const topic = useRecoilValue(topicData(urlName));
@@ -25,22 +42,8 @@ export const Topic = () => {
         return <div style={{ color: "red" }}>Topic not found</div>
     }
     return <div className="p-4 max-w-screen-lg mx-auto">
-        <div class="bg-white mb-4 shadow-md flex max-h-40">
-            <div class="h-40 w-40 bg-cover flex-shrink-0"
-                style={{ backgroundImage: "url('" + topic.image_url + "')" }}
-            />
-            <div class="p-4 flex flex-col">
-                <h1>{topic.name}</h1>
-                <div class="flex-grow overflow-hidden" dangerouslySetInnerHTML={{ __html: topic.description }}>
-
-                </div>
-                <div class="text-sm">
-                    <a href={topic.url}>View it on Scoop.it</a>
-                </div>
-
-            </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <TopicHeader {...topic} />
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="md:hidden">{topic.posts.map((post, i) => (<Post key={i} {...post} />))}</div>
             <div class="hidden md:block">{topic.posts.map((post, i) => i % 2 === 0 && (<Post key={i} {...post} />))}</div>
             <div class="hidden md:block">{topic.posts.map((post, i) => i % 2 === 1 && (<Post key={i} {...post} />))}</div>

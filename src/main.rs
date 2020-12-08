@@ -132,10 +132,11 @@ async fn get_topic(
         .scoopit_client
         .get(GetTopicRequest {
             url_name: Some(url_name),
+
             ..Default::default()
         })
         .await?;
-
+    //debug!("Topic: {:#?}", topic);
     // convert to json using our smaller types.
     Ok(Box::new(warp::reply::json(&output::TopicJsonOutput::from(
         topic,
@@ -174,6 +175,7 @@ async fn search(
         .get(SearchRequest {
             search_type,
             query,
+            lang: Some("fr".to_string()),
             ..Default::default()
         })
         .await?;

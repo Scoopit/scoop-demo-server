@@ -22,6 +22,8 @@ pub struct PostJsonOutput {
     scoop_url: String,
     url: Option<String>,
     image_url: Option<String>,
+    curation_date: i64,
+    author: Option<UserJsonOutput>,
 }
 #[derive(Serialize)]
 pub struct UserJsonOutput {
@@ -30,6 +32,7 @@ pub struct UserJsonOutput {
     url: String,
     bio: Option<String>,
     avatar_url: String,
+    small_avatar_url: String,
 }
 
 impl From<Topic> for TopicJsonOutput {
@@ -63,6 +66,8 @@ impl From<Post> for PostJsonOutput {
             scoop_url: p.scoop_url,
             url: p.url,
             image_url: p.large_image_url,
+            curation_date: p.curation_date,
+            author: p.author.map(UserJsonOutput::from),
         }
     }
 }
@@ -75,6 +80,7 @@ impl From<Box<User>> for UserJsonOutput {
             url: u.url,
             bio: u.bio,
             avatar_url: u.large_avatar_url,
+            small_avatar_url: u.avatar_url,
         }
     }
 }
@@ -86,6 +92,7 @@ impl From<User> for UserJsonOutput {
             url: u.url,
             bio: u.bio,
             avatar_url: u.large_avatar_url,
+            small_avatar_url: u.avatar_url,
         }
     }
 }

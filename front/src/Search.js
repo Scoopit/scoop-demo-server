@@ -107,7 +107,7 @@ export const SearchedTopic = ({ name, short_name, description, post_count, image
         ></div>
         <div class="m-4 overflow-hidden">
             <div class="text-xl whitespace-nowrap overflow-ellipsis"><Link className="text-black" to={"/topic/" + short_name}>{name}</Link></div>
-            <div class="text-sm">{description}</div>
+            <div class="text-sm" dangerouslySetInnerHTML={{ __html: description }} />
         </div>
     </div>
 }

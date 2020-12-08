@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { atom, useRecoilState } from 'recoil';
-import { of, Subject } from 'rxjs';
+import { merge, of, Subject } from 'rxjs';
 import { catchError, debounceTime, switchMap } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
 import { Link } from 'react-router-dom';
 
 const searchQuery$ = new Subject();
+const searchQueryClicked$ = new Subject();
 
 const searchInputValue = atom({
     key: "search/inputValue",
@@ -31,8 +32,9 @@ export const Search = () => {
     const setLoading = useSetRecoilState(loading);
     useEffect(() => {
         // set value of input state
-        const sub = searchQuery$.pipe(
-            debounceTime(500),
+        const debounced$ = searchQuery$.pipe(debounceTime(500));
+
+        const sub = merge(debounced$, searchQueryClicked$).pipe(
             switchMap(q => {
                 if (q === "") {
                     return of(null);
@@ -76,7 +78,9 @@ const SearchField = () => {
                     searchQuery$.next(value);
                 }}
             />
-            <div class={"pt-1 pb-1 pl-3 pr-3 shadow-sm  border-lime:600 transition-colors border rounded inline-block text-white uppercase " + buttonClasses}>
+            <div class={"pt-1 pb-1 pl-3 pr-3 shadow-sm  border-lime:600 transition-colors border rounded inline-block text-white uppercase " + buttonClasses}
+                onClick={() => searchQueryClicked$.next(value)}
+            >
                 {isLoading ? "Searching" : "Search"}
             </div>
         </div>

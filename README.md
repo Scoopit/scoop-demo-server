@@ -57,7 +57,7 @@ Alternatively you can use the provided `Dockerfile`:
 docker build -t scoop-demo-server .
 
 # run the image with correct args
-docker run -p 5001:5001 \
+docker run --init -p 5001:5001 \
   -e RUST_LOG=info \
   -e APP_BIND_ADDRESS=0.0.0.0:5501 \
   -e APP_CLIENT_ID=my_client_id \

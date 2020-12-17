@@ -1,13 +1,14 @@
-import { Route, BrowserRouter as Router, Link } from 'react-router-dom';
+import { Route, Router, Link } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 import { Topic } from './Topic';
 import React from 'react';
-import { Search, SearchLoading, SearchResults } from './Search';
+import { Search, SearchResults } from './Search';
+import { history } from './history';
 
 function App() {
   return (
     <RecoilRoot>
-      <Router>
+      <Router history={history} >
         <div class="p-4 text-lg">
           <Link to="/" class="text-black">Scoop.it API demo</Link>
         </div>
@@ -26,6 +27,9 @@ function App() {
               </li>
             </ul>
           </div>
+          <Search />
+        </Route>
+        <Route path="/search/:searchQuery?">
           <div class="mb-4">
             <Search />
           </div>

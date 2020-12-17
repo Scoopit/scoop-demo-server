@@ -79,7 +79,7 @@ const ViewOriginal = ({ url }) => {
 const PostHeader = ({ author, curation_date }) => (
     <div class="flex items-center justify-between p-4 border-b ">
         <div class="flex items-center">
-            <img class="w-8 rounded-full mr-2" src={author.small_avatar_url} />
+            <img class="w-8 rounded-full mr-2" src={author.small_avatar_url} alt={author.name} />
             <div>{author.name}</div>
         </div>
         <div class="text-xs ">{format(new Date(curation_date), "dd MMM yyyy, HH:mm")}</div>
@@ -94,7 +94,7 @@ const Post = ({ title, html_content, html_fragment, url, image_url, html_insight
                 <a href={url} class="text-black" target="blank">{title}</a>
             </div>
             <div>
-                <img src={image_url} class="w-full" />
+                <img src={image_url} class="w-full" alt={title} />
             </div>
             <div class="mt-1 flex-grow overflow-ellipsis overflow-hidden"
                 dangerouslySetInnerHTML={{ __html: html_content }}></div>

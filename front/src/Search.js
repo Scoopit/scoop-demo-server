@@ -1,85 +1,91 @@
-import React, { useEffect } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { atom, useRecoilState } from 'recoil';
+import React from 'react';
 import { merge, of, Subject } from 'rxjs';
 import { catchError, debounceTime, switchMap } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
 import { Link } from 'react-router-dom';
+import { Store } from "pullstate";
+import { history } from './history';
 
-const searchQuery$ = new Subject();
-const searchQueryClicked$ = new Subject();
-
-const searchInputValue = atom({
-    key: "search/inputValue",
-    default: "",
+const SearchStore = new Store({
+    // maps search inpit
+    liveSearchQuery: "",
+    // searchQuery actually being searched for
+    searchQuery: null,
+    searchResults: null,
+    loading: false,
 });
 
-// the search results
-const searchResult = atom({
-    key: "search/results",
-    default: null,
-})
+const searchQuery$ = new Subject();
 
-const loading = atom({
-    key: "search/results/loading",
-    default: false,
-})
+// store.liveSearchQueryr is direcly plugged on the rxjs subject
+searchQuery$.subscribe(query => SearchStore.update(function (state) {
+    state.liveSearchQuery = query;
+}));
+
+const searchQueryClicked$ = new Subject();
+
+const debounced$ = searchQuery$.pipe(debounceTime(500));
+
+// receive search queries!!
+const doSearch$ = new Subject();
+doSearch$.pipe(
+    switchMap(q => {
+        if (q === "") {
+            return of(null);
+        } else {
+            SearchStore.update(s => {
+                s.loading = true;
+            })
+            return ajax.getJSON("/api/search/topic/" + encodeURIComponent(q))
+                .pipe(catchError(error => {
+                    console.log('error: ', error);
+                    return of(error);
+                }))
+        }
+    })
+).subscribe(results => {
+    SearchStore.update(s => {
+        s.searchResults = results;
+        s.loading = false;
+    })
+});
+
+// forward query to url
+merge(debounced$, searchQueryClicked$).subscribe(q => {
+    history.push("/search/" + encodeURIComponent(q))
+});
+
+const handleSearchUrl = location => {
+    if (location.pathname.startsWith("/search/")) {
+        const query = decodeURIComponent(location.pathname.substring(8));
+        doSearch$.next(query);
+    }
+}
+// forward url changes to doSearch$
+history.listen(handleSearchUrl);
+// also call this immediately
+handleSearchUrl(history.location)
 
 export const Search = () => {
-    // handle debouncing and fetching.
-    // results are stored in a recoil state
-    const setSearchResults = useSetRecoilState(searchResult);
-    const setLoading = useSetRecoilState(loading);
-    useEffect(() => {
-        // set value of input state
-        const debounced$ = searchQuery$.pipe(debounceTime(500));
-
-        const sub = merge(debounced$, searchQueryClicked$).pipe(
-            switchMap(q => {
-                if (q === "") {
-                    return of(null);
-                } else {
-                    setLoading(true) // not sure its appropriate to do this here
-                    return ajax.getJSON("/api/search/topic/" + encodeURIComponent(q))
-                        .pipe(catchError(error => {
-                            console.log('error: ', error);
-                            return of(error);
-                        }))
-                }
-            }),
-        ).subscribe(results => {
-            setSearchResults(results)
-            setLoading(false);
-        });
-        return () => {
-            sub.unsubscribe();
-        }
-    }, [setSearchResults, setLoading])
-    return <SearchField />
-};
-
-const SearchField = () => {
-    let [value, setValue] = useRecoilState(searchInputValue);
-    let isLoading = useRecoilValue(loading);
+    let liveSearchQuery = SearchStore.useState(s => s.liveSearchQuery);
+    let isLoading = SearchStore.useState(s => s.loading);
 
     const buttonClasses = isLoading ? "bg-gray-400" : "hover:bg-lime-700  bg-lime-600 cursor-pointer"
 
     return <div class="p-4 bg-white shadow-sm">
-        Or search for one:
+        Search for a topic:
             <div class="flex max-w-md">
             <input type="text" placeholder="Enter some text here"
                 class="flex-grow p-1 border border-lime-300 focus:border-lime-600 focus:outline-none rounded-sm"
-                value={value}
+                value={liveSearchQuery}
                 onChange={(e) => {
-                    const value = e.target.value;
-                    // set value in recoil state
-                    setValue(value)
+                    const newValue = e.target.value;
                     // send value to our rxjs subject
-                    searchQuery$.next(value);
+                    searchQuery$.next(newValue);
                 }}
             />
             <div class={"pt-1 pb-1 pl-3 pr-3 shadow-sm  border-lime:600 transition-colors border rounded inline-block text-white uppercase " + buttonClasses}
-                onClick={() => searchQueryClicked$.next(value)}
+                onClick={() => searchQueryClicked$.next(liveSearchQuery)}
             >
                 {isLoading ? "Searching" : "Search"}
             </div>
@@ -88,7 +94,8 @@ const SearchField = () => {
 }
 
 export const SearchResults = () => {
-    const results = useRecoilValue(searchResult);
+    const results = SearchStore.useState(s => s.searchResults);
+    console.log(results)
     if (results && results.topics && results.topics.length > 0) {
         return <div class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {results.topics.map((topic, i) => <SearchedTopic {...topic} key={i} />)}

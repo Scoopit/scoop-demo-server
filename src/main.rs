@@ -94,7 +94,7 @@ async fn main() -> anyhow::Result<()> {
 
     // serve index.html on some specific path handled by React Router
     let server_index_html = warp::get()
-        .and(warp::path("topic"))
+        .and(warp::path("topic").or(warp::path("search")).unify())
         .and(warp::fs::file(index_html));
 
     // 404 not found for all get requests not matching any filters

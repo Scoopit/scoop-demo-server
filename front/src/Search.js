@@ -61,7 +61,6 @@ merge(debounced$, searchQueryClicked$).subscribe(q => {
 const useSearchResults = (query) => {
     const [finished, result] = searchAction.useBeckon({ query });
     return {
-        isLoading: !finished,
         finished: finished,
         error: result.error,
         payload: result.payload
@@ -75,7 +74,7 @@ export const Search = () => {
     if (history.location.pathname.startsWith("/search")) {
         // we are on the search page
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        isLoading = useSearchResults(searchQuery).isLoading;
+        isLoading = !useSearchResults(searchQuery).finished;
     } else {
         isLoading = false;
     }
@@ -105,10 +104,12 @@ export const Search = () => {
 export const SearchResults = () => {
     let { searchQuery } = useParams();
     const { finished, payload } = useSearchResults(searchQuery);
-    if (finished && payload == null) {
+    if (!finished) {
+        return <div>Loading...</div>;
+    } else if (payload == null) {
         // search field empty
         return null;
-    } else if (finished && payload.topics && payload.topics.length > 0) {
+    } else if (payload.topics && payload.topics.length > 0) {
         return <div class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {payload.topics.map((topic, i) => <SearchedTopic {...topic} key={i} />)}
         </div>;
@@ -117,10 +118,7 @@ export const SearchResults = () => {
         return <div class="p-4 bg-white shadow-md">
             No results found...
         </div>
-    } else {
-        return <div>Loading...</div>;
     }
-
 }
 
 export const SearchedTopic = ({ name, short_name, description, post_count, image_url }) => {

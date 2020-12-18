@@ -56,7 +56,12 @@ const debounced$ = searchQuery$.pipe(debounceTime(500));
 merge(debounced$, searchQueryClicked$).subscribe(q => {
     // always re-run the search
     searchAction.clearCache({ query: q });
-    history.push("/search/" + encodeURIComponent(q))
+
+    // change page if we are not yet on the right search page.
+    const searchUri = "/search/" + encodeURIComponent(q);
+    if (searchUri !== history.location.pathname) {
+        history.push(searchUri)
+    }
 });
 
 const useSearchResults = (query) => {

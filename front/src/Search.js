@@ -28,13 +28,21 @@ const searchAction = createAsyncAction(async ({ query }) => {
         return successResult(null)
     }
     console.log("Searching: " + query)
-    const response = await fetch("/api/search/topic/" + query)
+    const response = await fetch("/api/search/topic/" + encodeURIComponent(query))
     if (response.ok) {
         return successResult(await response.json());
     } else {
         return errorResult([], `An error occured during search for: ${query}`);
     }
 });
+const useSearchResults = (query) => {
+    const [finished, result] = searchAction.useBeckon({ query });
+    return {
+        finished: finished,
+        error: result.error,
+        payload: result.payload
+    }
+}
 
 // Debounce search field input and go to /search/{query} page
 const searchQuery$ = new Subject();
@@ -54,15 +62,6 @@ merge(debounced$, searchQueryClicked$).subscribe(q => {
         history.push(searchUri)
     }
 });
-
-const useSearchResults = (query) => {
-    const [finished, result] = searchAction.useBeckon({ query });
-    return {
-        finished: finished,
-        error: result.error,
-        payload: result.payload
-    }
-}
 
 export const Search = () => {
     let { searchQuery } = useParams();

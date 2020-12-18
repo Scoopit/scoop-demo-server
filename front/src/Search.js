@@ -34,15 +34,6 @@ const searchAction = createAsyncAction(async ({ query }) => {
     } else {
         return errorResult([], `An error occured during search for: ${query}`);
     }
-}, {
-    postActionHook: ({ result }) => {
-        if (!result.error) {
-            SearchStore.update(s => {
-                s.searchResults = result.payload;
-                s.loading = false;
-            });
-        }
-    }
 });
 
 // Debounce search field input and go to /search/{query} page

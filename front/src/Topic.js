@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { format } from "date-fns";
 import { createAsyncAction, errorResult, successResult } from "pullstate";
+import { Loading } from './Loading';
 
 const fetchTopicAction = createAsyncAction(async ({ urlName }) => {
     const response = await fetch("/api/topic/" + urlName)
@@ -33,7 +34,7 @@ export const Topic = () => {
     let { urlName } = useParams();
     const [finished, result] = fetchTopicAction.useBeckon({ urlName });
     if (!finished) {
-        return <div>Locading...</div>
+        return <Loading />
     }
     const topic = result.payload
     if (topic == null) {

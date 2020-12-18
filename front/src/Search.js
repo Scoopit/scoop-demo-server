@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { merge, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { Link, useParams } from 'react-router-dom';
 import { Store, createAsyncAction, errorResult, successResult } from "pullstate";
 import { history } from './history';
+import { Loading } from './Loading';
 
 // compute search query from current history
 function getInitialSearchQuery() {
@@ -105,7 +106,7 @@ export const SearchResults = () => {
     let { searchQuery } = useParams();
     const { finished, payload } = useSearchResults(searchQuery);
     if (!finished) {
-        return <div>Loading...</div>;
+        return <Loading />;
     } else if (payload == null) {
         // search field empty
         return null;

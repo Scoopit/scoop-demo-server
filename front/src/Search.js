@@ -1,74 +1,84 @@
-import React from 'react';
-import { merge, of, Subject } from 'rxjs';
-import { catchError, debounceTime, switchMap } from 'rxjs/operators';
-import { ajax } from 'rxjs/ajax';
-import { Link } from 'react-router-dom';
-import { Store } from "pullstate";
+import React, { useEffect } from 'react';
+import { merge, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { Link, useParams } from 'react-router-dom';
+import { Store, createAsyncAction, errorResult, successResult } from "pullstate";
 import { history } from './history';
 
+// compute search query from current history
+function getInitialSearchQuery() {
+    const loc = history.location;
+    if (loc.pathname.startsWith("/search/")) {
+        return decodeURIComponent(loc.pathname.substring(8))
+    } else {
+        return "";
+    }
+}
+
+// global search store: only keep the current state if the input so it is reminded during navigation accross pages
 const SearchStore = new Store({
-    // maps search inpit
-    liveSearchQuery: "",
-    // searchQuery actually being searched for
-    searchQuery: null,
-    searchResults: null,
-    loading: false,
+    // maps search init
+    liveSearchQuery: getInitialSearchQuery(),
 });
 
-const searchQuery$ = new Subject();
+// Search for some topics...
+const searchAction = createAsyncAction(async ({ query }) => {
+    if (query == null || query === "") {
+        return successResult(null)
+    }
+    console.log("Searching: " + query)
+    const response = await fetch("/api/search/topic/" + query)
+    if (response.ok) {
+        return successResult(await response.json());
+    } else {
+        return errorResult([], `An error occured during search for: ${query}`);
+    }
+}, {
+    postActionHook: ({ result }) => {
+        if (!result.error) {
+            SearchStore.update(s => {
+                s.searchResults = result.payload;
+                s.loading = false;
+            });
+        }
+    }
+});
 
-// store.liveSearchQueryr is direcly plugged on the rxjs subject
+// Debounce search field input and go to /search/{query} page
+const searchQuery$ = new Subject();
 searchQuery$.subscribe(query => SearchStore.update(function (state) {
     state.liveSearchQuery = query;
 }));
-
 const searchQueryClicked$ = new Subject();
-
 const debounced$ = searchQuery$.pipe(debounceTime(500));
-
-// receive search queries!!
-const doSearch$ = new Subject();
-doSearch$.pipe(
-    switchMap(q => {
-        if (q === "") {
-            return of(null);
-        } else {
-            SearchStore.update(s => {
-                s.loading = true;
-            })
-            return ajax.getJSON("/api/search/topic/" + encodeURIComponent(q))
-                .pipe(catchError(error => {
-                    console.log('error: ', error);
-                    return of(error);
-                }))
-        }
-    })
-).subscribe(results => {
-    SearchStore.update(s => {
-        s.searchResults = results;
-        s.loading = false;
-    })
-});
-
 // forward query to url
 merge(debounced$, searchQueryClicked$).subscribe(q => {
+    // always re-run the search
+    searchAction.clearCache({ query: q });
     history.push("/search/" + encodeURIComponent(q))
 });
 
-const handleSearchUrl = location => {
-    if (location.pathname.startsWith("/search/")) {
-        const query = decodeURIComponent(location.pathname.substring(8));
-        doSearch$.next(query);
+const useSearchResults = (query) => {
+    const [finished, result] = searchAction.useBeckon({ query });
+    return {
+        isLoading: !finished,
+        finished: finished,
+        error: result.error,
+        payload: result.payload
     }
 }
-// forward url changes to doSearch$
-history.listen(handleSearchUrl);
-// also call this immediately
-handleSearchUrl(history.location)
 
 export const Search = () => {
+    let { searchQuery } = useParams();
     let liveSearchQuery = SearchStore.useState(s => s.liveSearchQuery);
-    let isLoading = SearchStore.useState(s => s.loading);
+    let isLoading;
+    if (history.location.pathname.startsWith("/search")) {
+        // we are on the search page
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        isLoading = useSearchResults(searchQuery).isLoading;
+    } else {
+        isLoading = false;
+    }
 
     const buttonClasses = isLoading ? "bg-gray-400" : "hover:bg-lime-700  bg-lime-600 cursor-pointer"
 
@@ -79,9 +89,8 @@ export const Search = () => {
                 class="flex-grow p-1 border border-lime-300 focus:border-lime-600 focus:outline-none rounded-sm"
                 value={liveSearchQuery}
                 onChange={(e) => {
-                    const newValue = e.target.value;
                     // send value to our rxjs subject
-                    searchQuery$.next(newValue);
+                    searchQuery$.next(e.target.value);
                 }}
             />
             <div class={"pt-1 pb-1 pl-3 pr-3 shadow-sm  border-lime:600 transition-colors border rounded inline-block text-white uppercase " + buttonClasses}
@@ -94,19 +103,22 @@ export const Search = () => {
 }
 
 export const SearchResults = () => {
-    const results = SearchStore.useState(s => s.searchResults);
-    console.log(results)
-    if (results && results.topics && results.topics.length > 0) {
+    let { searchQuery } = useParams();
+    const { finished, payload } = useSearchResults(searchQuery);
+    if (finished && payload == null) {
+        // search field empty
+        return null;
+    } else if (finished && payload.topics && payload.topics.length > 0) {
         return <div class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {results.topics.map((topic, i) => <SearchedTopic {...topic} key={i} />)}
+            {payload.topics.map((topic, i) => <SearchedTopic {...topic} key={i} />)}
         </div>;
-    } else if (results != null) {
+    } else if (finished) {
         // search performed but no results
         return <div class="p-4 bg-white shadow-md">
             No results found...
         </div>
     } else {
-        return null;
+        return <div>Loading...</div>;
     }
 
 }

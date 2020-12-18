@@ -1,22 +1,16 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import {
-    useRecoilValue,
-    selectorFamily,
-} from 'recoil';
 import { format } from "date-fns";
+import { createAsyncAction, errorResult, successResult } from "pullstate";
 
-const topicData = selectorFamily({
-    key: 'topicData',
-    get: urlName => async ({ get }) => {
-        const response = await fetch("/api/topic/" + urlName)
-        if (response.ok) {
-            return response.json();
-        } else {
-            return null;
-        }
+const fetchTopicAction = createAsyncAction(async ({ urlName }) => {
+    const response = await fetch("/api/topic/" + urlName)
+    if (response.ok) {
+        return successResult(await response.json());
+    } else {
+        return errorResult([], `An error occured during search for: ${urlName}`);
     }
-})
+});
 
 export const TopicHeader = ({ image_url, name, description, url }) => (
     <div class="bg-white shadow-md flex max-h-32 md:max-h-40">
@@ -37,7 +31,11 @@ export const TopicHeader = ({ image_url, name, description, url }) => (
 
 export const Topic = () => {
     let { urlName } = useParams();
-    const topic = useRecoilValue(topicData(urlName));
+    const [finished, result] = fetchTopicAction.useBeckon({ urlName });
+    if (!finished) {
+        return <div>Locading...</div>
+    }
+    const topic = result.payload
     if (topic == null) {
         return <div style={{ color: "red" }}>Topic not found</div>
     }

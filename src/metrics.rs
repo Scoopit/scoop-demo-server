@@ -36,7 +36,7 @@ async fn collect(interval: Duration) {
 async fn collect(interval: Duration) {
     loop {
         warn!("Collecting process info not available on this platform");
-        tokio::time::delay_for(interval).await;
+        tokio::time::sleep(interval).await;
     }
 }
 

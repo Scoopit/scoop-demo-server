@@ -3,7 +3,7 @@ FROM rust:latest as scoop-demo-server-builder
 
 RUN cargo --version
 
-# Build Dependancies
+# Build Dependencies
 WORKDIR /build
 RUN USER=root cargo new --bin app
 WORKDIR /build/app

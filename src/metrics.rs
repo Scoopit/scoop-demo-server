@@ -28,7 +28,7 @@ async fn collect(interval: Duration) {
     loop {
         debug!("Collecting process info");
         process_collector.collect();
-        tokio::time::delay_for(interval).await;
+        tokio::time::sleep(interval).await;
     }
 }
 

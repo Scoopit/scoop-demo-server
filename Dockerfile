@@ -31,4 +31,9 @@ FROM debian:stable-slim AS run
 COPY --from=scoop-demo-server-builder /build/app/target/release/scoop-demo-server scoop-demo-server
 COPY --from=scoop-demo-server-front-builder /build/front/build /www
 ENV APP_STATIC_HTML=/www
-ENTRYPOINT ["./scoop-demo-server"]
+
+ENV TINI_VERSION v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
+CMD ["./scoop-demo-server"]

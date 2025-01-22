@@ -18,7 +18,7 @@ RUN rm target/release/deps/scoop_demo_server*
 RUN cargo build --release
 
 # Build frontend
-FROM node:12 as scoop-demo-server-front-builder
+FROM node:22 as scoop-demo-server-front-builder
 WORKDIR /build
 COPY front front
 WORKDIR /build/front

@@ -1,6 +1,6 @@
 [package]
 name = "scoop-demo-server"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Philippe GASSMANN <philippe.gassmann@scoop.it>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
@@ -8,16 +8,16 @@ license = "MIT OR Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow="1"
-thiserror="1"
-tokio = { version="^1.0", features = ["rt","rt-multi-thread", "macros"]}
-warp="0.3"
-scoopit-api="0.2"
+anyhow = "1"
+thiserror = "2"
+tokio = { version = "^1.0", features = ["rt", "rt-multi-thread", "macros"] }
+warp = "0.3"
+scoopit-api = "0.16"
 #scoopit-api={path="../scoopit-api-rs"}
-log="0.4"
-env_logger="0.8"
-dotenv = "0.15.0"
-envy="0.4"
-serde={version="1", features=["derive"]}
-prometheus = { version="0.11.0", features=["process"] }
-urlencoding="1.1"
+log = "0.4"
+env_logger = "0.11"
+dotenvy = "0.15.0"
+envy = "0.4"
+serde = { version = "1", features = ["derive"] }
+prometheus = { version = "0.13.0", features = ["process"] }
+urlencoding = "2.1"

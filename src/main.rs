@@ -22,7 +22,7 @@ struct ServerResources {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // generic setup & config parsing
-    let _ = dotenv::dotenv();
+    let _ = dotenvy::dotenv();
     env_logger::init();
     let config = Config::try_from_env()?;
 
@@ -174,7 +174,7 @@ async fn search(
         .scoopit_client
         .get(SearchRequest {
             search_type,
-            query,
+            query: query.to_string(),
             lang: Some("fr".to_string()),
             ..Default::default()
         })

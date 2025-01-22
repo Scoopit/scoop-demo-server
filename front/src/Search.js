@@ -77,18 +77,18 @@ export const Search = () => {
 
     const buttonClasses = isLoading ? "bg-gray-400" : "hover:bg-lime-700  bg-lime-600 cursor-pointer"
 
-    return <div class="p-4 bg-white shadow-sm">
+    return <div className="p-4 bg-white shadow-sm">
         Search for a topic:
-            <div class="flex max-w-md">
+        <div className="flex max-w-md">
             <input type="text" placeholder="Enter some text here"
-                class="flex-grow p-1 border border-lime-300 focus:border-lime-600 focus:outline-none rounded-sm"
+                className="flex-grow p-1 border border-lime-300 focus:border-lime-600 focus:outline-none rounded-sm"
                 value={liveSearchQuery}
                 onChange={(e) => {
                     // send value to our rxjs subject
                     searchQuery$.next(e.target.value);
                 }}
             />
-            <div class={"pt-1 pb-1 pl-3 pr-3 shadow-sm  border-lime:600 transition-colors border rounded inline-block text-white uppercase " + buttonClasses}
+            <div className={"pt-1 pb-1 pl-3 pr-3 shadow-sm  border-lime:600 transition-colors border rounded inline-block text-white uppercase " + buttonClasses}
                 onClick={() => searchQueryClicked$.next(liveSearchQuery)}
             >
                 {isLoading ? "Searching" : "Search"}
@@ -106,25 +106,25 @@ export const SearchResults = () => {
         // search field empty
         return null;
     } else if (payload.topics && payload.topics.length > 0) {
-        return <div class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        return <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {payload.topics.map((topic, i) => <SearchedTopic {...topic} key={i} />)}
         </div>;
     } else if (finished) {
         // search performed but no results
-        return <div class="p-4 bg-white shadow-md">
+        return <div className="p-4 bg-white shadow-md">
             No results found...
         </div>
     }
 }
 
 export const SearchedTopic = ({ name, short_name, description, post_count, image_url }) => {
-    return <div class="bg-white flex shadow-md h-20">
-        <div class="h-20 w-20 bg-cover flex-shrink-0"
+    return <div className="bg-white flex shadow-md h-20">
+        <div className="h-20 w-20 bg-cover flex-shrink-0"
             style={{ backgroundImage: "url('" + image_url + "')" }}
         ></div>
-        <div class="m-4 overflow-hidden">
-            <div class="text-xl whitespace-nowrap overflow-ellipsis"><Link className="text-black" to={"/topic/" + short_name}>{name}</Link></div>
-            <div class="text-sm" dangerouslySetInnerHTML={{ __html: description }} />
+        <div className="m-4 overflow-hidden">
+            <div className="text-xl whitespace-nowrap overflow-ellipsis"><Link className="text-black" to={"/topic/" + short_name}>{name}</Link></div>
+            <div className="text-sm" dangerouslySetInnerHTML={{ __html: description }} />
         </div>
     </div>
 }

@@ -3,28 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@craco/craco": "^7.1.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "autoprefixer": "^9.8.6",
     "date-fns": "^2.16.1",
     "history": "^4.9.0",
-    "postcss": "^7.0.35",
+    "postcss": "^8.5.1",
     "pullstate": "^1.20.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "5.0.1",
     "rxjs": "^6.6.3",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.1",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
-    "eject": "react-scripts eject"
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html"
   },
   "eslintConfig": {
     "extends": [
@@ -44,5 +38,13 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:5001"
+  "proxy": "http://localhost:5001",
+  "devDependencies": {
+    "@parcel/packager-raw-url": "2.13.3",
+    "@parcel/transformer-webmanifest": "2.13.3",
+    "autoprefixer": "^10.4.20",
+    "parcel": "^2.13.3",
+    "process": "^0.11.10",
+    "tailwindcss": "^3.4.17"
+  }
 }

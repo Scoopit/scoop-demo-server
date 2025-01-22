@@ -29,7 +29,8 @@ RUN echo Front build size: $(du -hs build)
 # Build Run
 FROM debian:stable-slim AS run
 COPY --from=scoop-demo-server-builder /build/app/target/release/scoop-demo-server scoop-demo-server
-COPY --from=scoop-demo-server-front-builder /build/front/build /www
+COPY --from=scoop-demo-server-front-builder /build/front/dist /www
+COPY --from=scoop-demo-server-front-builder /build/front/public/robots.txt /www
 ENV APP_STATIC_HTML=/www
 
 ENV TINI_VERSION v0.19.0

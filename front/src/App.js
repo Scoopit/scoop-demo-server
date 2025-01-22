@@ -7,13 +7,13 @@ import { history } from './history';
 function App() {
   return (
     <Router history={history} >
-      <div class="p-4 text-lg">
+      <div className="p-4 text-lg">
         <Link to="/" className="text-black">Scoop.it API demo</Link>
       </div>
       <Route path="/" exact>
-        <div class="p-4 bg-white shadow-sm mb-4">
+        <div className="p-4 bg-white shadow-sm mb-4">
           Please choose a topic:
-              <ul>
+          <ul>
             <li>
               <Link to="/topic/corona-virus-news">Corona Virus News</Link>
             </li>
@@ -28,10 +28,10 @@ function App() {
         <Search />
       </Route>
       <Route path="/search/:searchQuery?">
-        <div class="mb-4">
+        <div className="mb-4">
           <Search />
         </div>
-        <div class="relative">
+        <div className="relative">
           <SearchResults />
         </div>
       </Route>
